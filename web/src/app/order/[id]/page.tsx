@@ -8,7 +8,7 @@ import {
   getOrder,
   parseOrderId,
 } from "@/lib/orders";
-import { CopyAddress } from "@/components/CopyAddress";
+import { SettleWithWallet } from "@/components/SettleWithWallet";
 
 export default async function OrderPage({
   params,
@@ -30,8 +30,8 @@ export default async function OrderPage({
       <h2 style={{ marginTop: "0.8rem" }}>{order.id}</h2>
       <p className="section-lead">
         Sell {formatTokenAmount(order.amount)} CRC · USD reference{" "}
-        {formatUsd(order.priceUsd)}. Pay the live BTC amount to the CRC treasury
-        to take this lot.
+        {formatUsd(order.priceUsd)}. Connect any Bitcoin wallet and transfer the
+        live BTC amount to settle this lot on L1.
       </p>
 
       <div className="grid-2">
@@ -72,9 +72,7 @@ export default async function OrderPage({
             </div>
             <div className="kv-row">
               <span>Sats</span>
-              <strong>
-                {quote ? formatSats(quote.amountSats) : "—"}
-              </strong>
+              <strong>{quote ? formatSats(quote.amountSats) : "—"}</strong>
             </div>
             <div className="kv-row">
               <span>Spot</span>
@@ -86,13 +84,15 @@ export default async function OrderPage({
             </div>
           </div>
           <p className="section-lead" style={{ marginTop: "1rem" }}>
-            Send exactly the quoted BTC amount to:
+            Connect a Bitcoin wallet, then confirm the transfer to the CRC
+            treasury:
           </p>
-          <CopyAddress address={TREASURY_ADDRESS} />
-          <p className="section-lead" style={{ marginTop: "0.9rem", marginBottom: 0 }}>
-            Include order id <strong>{order.id}</strong> in your wallet memo if
-            available. Quotes refresh about every 60 seconds.
-          </p>
+          <SettleWithWallet
+            orderId={order.id}
+            treasuryAddress={TREASURY_ADDRESS}
+            amountSats={quote?.amountSats ?? null}
+            amountBtc={quote?.amountBtc ?? null}
+          />
         </article>
       </div>
     </main>
